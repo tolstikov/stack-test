@@ -1,0 +1,55 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "",
+
+
+  "Parameters" : {
+
+    "SshKeyName" : {
+      "Type" : "String",
+      "Default" : "gigware",
+      "MinLength" : "1"
+    },
+    "Owner" : {
+      "Type" : "String",
+      "Default" : "tratata@example.com",
+      "MinLength" : "1"
+    }
+
+  },
+
+
+  "Resources" : {
+
+    "Ec2Sg" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : { "Fn::Join" : [ "", [ "Security group for stack ", { "Ref" : "AWS::StackName" } ] ] },
+        "SecurityGroupIngress" : [
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : "22",
+            "ToPort" : "22",
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+
+    "Ec2Instance" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "KeyName" : { "Ref" : "SshKeyName" },
+        "ImageId" : "ami-2c066245",
+        "InstanceType" : "t1.micro",
+        "SecurityGroups" : [ { "Ref" : "Ec2Sg" } ],
+        "Tags" : [
+          { "Key" : "Name", "Value" : { "Fn::Join" : [ "-", [ "instance", { "Ref" : "AWS::StackName" } ] ] } },
+          { "Key" : "Name", "Value" : { "Ref" : "Owner" } }
+        ]
+      }
+    }
+
+
+  }
+}
